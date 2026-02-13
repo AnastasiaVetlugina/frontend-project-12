@@ -1,16 +1,35 @@
 import { Formik, Form, Field } from "formik"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from 'axios'
 
 const LoginPage = () => {
-return (
-  <Formik
-    initialValues={{ username: '', password: '' }}
-    onSubmit={(values, { setSubmitting }) => {
-    console.log('Form values:', values)
-    console.log('Form is validated! Submitting the form...')
-    setSubmitting(false)
-    }}
->
-    {() => (
+  const navigate = useNavigate()
+  const [loginError, setLoginError] = useState("")
+
+  return (
+    <Formik
+      initialValues={{ username: "", password: "" }}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          setLoginError("")
+
+          const response = await axios.post("/api/v1/login", {
+            username: values.username,
+            password: values.password,
+          })
+
+          localStorage.setItem("token", response.data.token)
+          navigate("/");
+        } catch (error) {
+          setLoginError(
+            "Неверный ник или пароль. Пожалуйста, попробуйте снова.",
+          )
+        } finally {
+          setSubmitting(false)
+        }
+      }}
+    >
       <Form className="col-12 col-md-6 mt-3 mt-md-0">
         <h1 className="text-center mb-4">Войти</h1>
         <div className="form-floating mb-3">
@@ -38,15 +57,11 @@ return (
           <label htmlFor="password">Пароль</label>
         </div>
 
-        <button
-            type="submit"
-            className="w-100 mb-3 btn btn-outline-primary"
-        >
-            Войти
+        <button type="submit" className="w-100 mb-3 btn btn-outline-primary">
+          Войти
         </button>
       </Form>
-    )}
-  </Formik>
+    </Formik>
   )
 }
 
