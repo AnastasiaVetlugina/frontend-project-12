@@ -1,12 +1,13 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./pages/loginPage.jsx";
-import NotFoundPage from "./pages/notFound.jsx";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import LoginPage from "./pages/loginPage.jsx"
+import ChatPage from "./pages/chatPage.jsx"
+import NotFoundPage from "./pages/notFound.jsx"
 
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token")
 
   if (!token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" />
   }
 
   return children;
@@ -20,7 +21,7 @@ function App() {
           path="/"
           element={
             <PrivateRoute>
-              <div>Здесь позже будет чат</div>
+              <ChatPage />
             </PrivateRoute>
           }
         />
