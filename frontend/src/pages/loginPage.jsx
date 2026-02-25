@@ -20,7 +20,7 @@ const LoginPage = () => {
           })
 
           localStorage.setItem("token", response.data.token)
-          navigate("/");
+          navigate("/")
         } catch (error) {
           setLoginError(
             "Неверный ник или пароль. Пожалуйста, попробуйте снова.",
