@@ -16,10 +16,10 @@ import {
   addMessage,
   selectMessages,
 } from "../store/messagesSlice"
-import AddChannelModal from "../components/AddChannelModal.jsx"
-import RemoveChannelModal from "../components/RemoveChannelModal.jsx"
-import RenameChannelModal from "../components/RenameChannelModal.jsx"
-import ChannelMenu from "../components/ChannelMenu.jsx"
+import AddChannelModal from "../components/addChannelModal.jsx"
+import RemoveChannelModal from "../components/removeChannelModal.jsx"
+import RenameChannelModal from "../components/renameChannelModal.jsx"
+import ChannelMenu from "../components/channelMenu.jsx"
 import store from "../store/index.js"
 
 const ChatPage = () => {
