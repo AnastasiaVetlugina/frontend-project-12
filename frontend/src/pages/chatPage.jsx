@@ -158,173 +158,153 @@ const ChatPage = () => {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    window.location = '/login'
-  }
-
   const currentMessages = messages.filter(
     (m) => m.channelId === currentChannelId,
   )
   const currentChannel = channels.find((c) => c.id === currentChannelId)
 
   return (
-    <div className="d-flex flex-column h-100">
-      <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
-        <div className="container">
-          <a className="navbar-brand" href="/">Hexlet Chat</a>
-          <button 
-            type="button" 
-            className="btn btn-primary"
-            onClick={handleLogout}
-          >
-            Выйти
-          </button>
-        </div>
-      </nav>
-
-      <div className="container h-100 my-4 overflow-hidden rounded shadow">
-        <div className="row h-100 bg-white flex-md-row">
-          <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
-            <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-              <b>Каналы</b>
-              <button
-                type="button"
-                className="p-0 text-primary btn btn-group-vertical"
-                onClick={() => setShowAddChannel(true)}
-              >
-                <span>+</span>
-              </button>
-            </div>
-            
-            <ul
-              id="channels-box"
-              className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
+    <div className="container h-100 my-4 overflow-hidden rounded shadow">
+      <div className="row h-100 bg-white flex-md-row">
+        <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
+          <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
+            <b>Каналы</b>
+            <button
+              type="button"
+              className="p-0 text-primary btn btn-group-vertical"
+              onClick={() => setShowAddChannel(true)}
             >
-              {channels.map((channel) => (
-                <li key={channel.id} className="nav-item w-100">
-                  {channel.name === "general" || channel.name === "random" ? (
-                    <button
-                      type="button"
-                      className={`w-100 rounded-0 text-start btn ${channel.id === currentChannelId ? "btn-secondary" : ""}`}
-                      onClick={() => dispatch(setCurrentChannel(channel.id))}
-                    >
-                      <span className="me-1">#</span>
-                      {channel.name}
-                    </button>
-                  ) : ( 
-                    <ChannelMenu 
-                      channel={channel}
-                      currentChannelId={currentChannelId}
-                      onSwitchChannel={(id) => dispatch(setCurrentChannel(id))}
-                      onShowRemove={() => setShowRemoveChannel(channel)}
-                      onShowRename={() => setShowRenameChannel(channel)}
-                    />
-                  )}
-                </li>
-              ))}
-            </ul>
+              <span>+</span>
+            </button>
           </div>
+          
+          <ul
+            id="channels-box"
+            className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
+          >
+            {channels.map((channel) => (
+              <li key={channel.id} className="nav-item w-100">
+                {channel.name === "general" || channel.name === "random" ? (
+                  <button
+                    type="button"
+                    className={`w-100 rounded-0 text-start btn ${channel.id === currentChannelId ? "btn-secondary" : ""}`}
+                    onClick={() => dispatch(setCurrentChannel(channel.id))}
+                  >
+                    <span className="me-1">#</span>
+                    {channel.name}
+                  </button>
+                ) : ( 
+                  <ChannelMenu 
+                    channel={channel}
+                    currentChannelId={currentChannelId}
+                    onSwitchChannel={(id) => dispatch(setCurrentChannel(id))}
+                    onShowRemove={() => setShowRemoveChannel(channel)}
+                    onShowRename={() => setShowRenameChannel(channel)}
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
 
-          <div className="col p-0 h-100">
-            <div className="d-flex flex-column h-100">
-              <div className="bg-light mb-4 p-3 shadow-sm small">
-                <p className="m-0">
-                  <b># {currentChannel?.name}</b>
-                </p>
-                <span className="text-muted">
-                  {currentMessages.length}{" "}
-                  {currentMessages.length === 1 ? "сообщение" : "сообщений"}
-                </span>
-              </div>
+        <div className="col p-0 h-100">
+          <div className="d-flex flex-column h-100">
+            <div className="bg-light mb-4 p-3 shadow-sm small">
+              <p className="m-0">
+                <b># {currentChannel?.name}</b>
+              </p>
+              <span className="text-muted">
+                {currentMessages.length}{" "}
+                {currentMessages.length === 1 ? "сообщение" : "сообщений"}
+              </span>
+            </div>
 
-              <div id="messages-box" className="chat-messages overflow-auto px-5">
-                {currentMessages.map((msg) => (
-                  <div key={msg.id} className="text-break mb-2">
-                    <b>{msg.username}:</b> {msg.text}
-                  </div>
-                ))}
-              </div>
+            <div id="messages-box" className="chat-messages overflow-auto px-5">
+              {currentMessages.map((msg) => (
+                <div key={msg.id} className="text-break mb-2">
+                  <b>{msg.username}:</b> {msg.text}
+                </div>
+              ))}
+            </div>
 
-              <div className="mt-auto px-5 py-3">
-                <form
-                  onSubmit={handleSendMessage}
-                  noValidate
-                  className="py-1 border rounded-2"
-                >
-                  <div className="input-group has-validation">
-                    <input
-                      name="body"
-                      aria-label="Новое сообщение"
-                      placeholder="Введите сообщение..."
-                      className="border-0 p-0 ps-2 form-control"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      disabled={sending}
-                    />
-                    <button
-                      type="submit"
-                      className="btn btn-group-vertical"
-                      disabled={sending || !newMessage.trim()}
-                    >
-                      Отправить
-                    </button>
-                  </div>
-                </form>
-              </div>
+            <div className="mt-auto px-5 py-3">
+              <form
+                onSubmit={handleSendMessage}
+                noValidate
+                className="py-1 border rounded-2"
+              >
+                <div className="input-group has-validation">
+                  <input
+                    name="body"
+                    aria-label="Новое сообщение"
+                    placeholder="Введите сообщение..."
+                    className="border-0 p-0 ps-2 form-control"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    disabled={sending}
+                  />
+                  <button
+                    type="submit"
+                    className="btn btn-group-vertical"
+                    disabled={sending || !newMessage.trim()}
+                  >
+                    Отправить
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-
-        {showAddChannel && (
-          <div 
-            className="modal show" 
-            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <AddChannelModal 
-                channelNames={channelNames}
-                onAddChannel={handleAddChannel}
-                onClose={() => setShowAddChannel(false)}
-              />
-            </div>
-          </div>
-        )}
-
-        {showRemoveChannel && (
-          <div 
-            className="modal show" 
-            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <RemoveChannelModal 
-                channel={showRemoveChannel}
-                onClose={() => setShowRemoveChannel(null)}
-                onRemove={handleRemoveChannel}
-              />
-            </div>
-          </div>
-        )}
-
-        {showRenameChannel && (
-          <div 
-            className="modal show" 
-            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-            tabIndex="-1"
-          >
-            <div className="modal-dialog modal-dialog-centered">
-              <RenameChannelModal 
-                channel={showRenameChannel}
-                onClose={() => setShowRenameChannel(null)}
-                onRename={handleRenameChannel}
-                channelNames={channelNames}
-              />
-            </div>
-          </div>
-        )}
       </div>
+
+      {showAddChannel && (
+        <div 
+          className="modal show" 
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <AddChannelModal 
+              channelNames={channelNames}
+              onAddChannel={handleAddChannel}
+              onClose={() => setShowAddChannel(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showRemoveChannel && (
+        <div 
+          className="modal show" 
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <RemoveChannelModal 
+              channel={showRemoveChannel}
+              onClose={() => setShowRemoveChannel(null)}
+              onRemove={handleRemoveChannel}
+            />
+          </div>
+        </div>
+      )}
+
+      {showRenameChannel && (
+        <div 
+          className="modal show" 
+          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
+          tabIndex="-1"
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <RenameChannelModal 
+              channel={showRenameChannel}
+              onClose={() => setShowRenameChannel(null)}
+              onRename={handleRenameChannel}
+              channelNames={channelNames}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
