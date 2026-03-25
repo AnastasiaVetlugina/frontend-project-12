@@ -3,6 +3,7 @@ import LoginPage from "./pages/loginPage.jsx"
 import SignupPage from "./pages/signupPage.jsx"
 import ChatPage from "./pages/chatPage.jsx"
 import NotFoundPage from "./pages/notFound.jsx"
+import { useTranslation } from 'react-i18next'
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem("token")
@@ -15,6 +16,7 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
+  const { t } = useTranslation()
   const token = localStorage.getItem("token")
   const isAuthenticated = !!token
 
@@ -28,14 +30,14 @@ function App() {
       <div className="d-flex flex-column h-100">
         <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
           <div className="container">
-            <a className="navbar-brand" href="/">Hexlet Chat</a>
+            <a className="navbar-brand" href="/">{t('app.title')}</a>
             {isAuthenticated && (
               <button 
                 type="button" 
                 className="btn btn-primary"
                 onClick={handleLogout}
               >
-                Выйти
+                {t('app.logout')}
               </button>
             )}
           </div>

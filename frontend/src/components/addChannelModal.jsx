@@ -1,9 +1,11 @@
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup"
 import { useEffect, useRef } from "react"
+import { useTranslation } from 'react-i18next'
 
 const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
   const inputRef = useRef(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -11,10 +13,10 @@ const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .min(3, "От 3 до 20 символов")
-      .max(20, "От 3 до 20 символов")
-      .required("Обязательное поле")
-      .notOneOf(channelNames, "Должно быть уникальным"),
+      .min(3, t('validation.usernameMin'))
+      .max(20, t('validation.usernameMax'))
+      .required(t('validation.required'))
+      .notOneOf(channelNames, t('validation.unique')),
   })
 
   return (
@@ -27,7 +29,7 @@ const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
           resetForm()
           onClose()
         } catch (error) {
-          console.error("Ошибка:", error)
+          console.error(t('errors.channelCreate'), error)
         } finally {
           setSubmitting(false)
         }
@@ -54,11 +56,11 @@ const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
                   id="name"
                   innerRef={inputRef}
                   className={`form-control ${errors.name && touched.name ? "is-invalid" : ""}`}
-                  placeholder="Имя канала"
+                  placeholder={t('modals.addChannel.namePlaceholder')}
                   disabled={isSubmitting}
                 />
                 <label className="visually-hidden" htmlFor="name">
-                  Имя канала
+                  {t('modals.addChannel.nameLabel')}
                 </label>
                 <ErrorMessage 
                   name="name" 
@@ -74,14 +76,14 @@ const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
                   onClick={onClose}
                   disabled={isSubmitting}
                 >
-                  Отменить
+                  {t('modals.addChannel.cancel')}
                 </button>
                 <button 
                   type="submit" 
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
-                  Отправить
+                  {t('modals.addChannel.submit')}
                 </button>
               </div>
             </div>

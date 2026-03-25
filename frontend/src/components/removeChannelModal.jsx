@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
   const [removing, setRemoving] = useState(false)
+  const { t } = useTranslation()
 
   const handleRemove = async () => {
     setRemoving(true)
@@ -9,7 +11,7 @@ const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
       await onRemove(channel.id)
       onClose()
     } catch (error) {
-      console.error('Ошибка удаления:', error)
+      console.error(t('errors.channelDelete'), error)
       setRemoving(false)
     }
   }
@@ -20,7 +22,7 @@ const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
-              <div className="modal-title h4">Удалить канал</div>
+              <div className="modal-title h4">{t('modals.removeChannel.title')}</div>
               <button 
                 type="button" 
                 aria-label="Close" 
@@ -31,7 +33,7 @@ const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
             </div>
             
             <div className="modal-body">
-              <p className="lead">Уверены?</p>
+              <p className="lead">{t('modals.removeChannel.confirmMessage')}</p>
               <div className="d-flex justify-content-end">
                 <button 
                   type="button" 
@@ -39,7 +41,7 @@ const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
                   onClick={onClose}
                   disabled={removing}
                 >
-                  Отменить
+                  {t('modals.removeChannel.cancel')}
                 </button>
                 <button 
                   type="button" 
@@ -47,7 +49,7 @@ const RemoveChannelModal = ({ channel, onClose, onRemove }) => {
                   onClick={handleRemove}
                   disabled={removing}
                 >
-                  Удалить
+                  {t('modals.removeChannel.submit')}
                 </button>
               </div>
             </div>

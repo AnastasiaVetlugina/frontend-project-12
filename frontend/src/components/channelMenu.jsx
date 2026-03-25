@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 const ChannelMenu = ({ channel, currentChannelId, onSwitchChannel, onShowRemove, onShowRename }) => {
+  const { t } = useTranslation()
+
   return (
     <div className="d-flex dropdown btn-group w-100">
       <button 
@@ -15,7 +19,7 @@ const ChannelMenu = ({ channel, currentChannelId, onSwitchChannel, onShowRemove,
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <span className="visually-hidden">Управление каналом</span>
+        <span className="visually-hidden">{t('chat.channelManagement')}</span>
       </button>
       
       <div className="dropdown-menu">
@@ -23,13 +27,13 @@ const ChannelMenu = ({ channel, currentChannelId, onSwitchChannel, onShowRemove,
           className="dropdown-item" 
           onClick={onShowRemove}
         >
-          Удалить
+          {t('chat.delete')}
         </button>
         <button 
           className="dropdown-item"
           onClick={onShowRename}
         >
-          Переименовать
+          {t('chat.rename')}
         </button>
       </div>
     </div>

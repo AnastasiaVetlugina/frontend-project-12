@@ -2,9 +2,11 @@ import { Formik, Form, Field } from "formik"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from 'axios'
+import { useTranslation } from 'react-i18next'
 
 const LoginPage = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [loginError, setLoginError] = useState("")
 
   return (
@@ -14,7 +16,7 @@ const LoginPage = () => {
           <div className="card shadow-sm">
             <div className="card-body row p-5">
               <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-                <img src="https://frontend-chat-ru.hexlet.app/assets/avatar-DIE1AEpS.jpg" className="rounded-circle" alt="Войти" />
+                <img src="https://frontend-chat-ru.hexlet.app/assets/avatar-DIE1AEpS.jpg" className="rounded-circle" alt={t('auth.login.title')} />
               </div>
               
               <Formik
@@ -31,9 +33,7 @@ const LoginPage = () => {
                     localStorage.setItem("token", response.data.token)
                     navigate("/")
                   } catch (error) {
-                    setLoginError(
-                      "Неверный ник или пароль. Пожалуйста, попробуйте снова.",
-                    )
+                    setLoginError(t('auth.login.error'))
                   } finally {
                     setSubmitting(false)
                   }
@@ -41,7 +41,7 @@ const LoginPage = () => {
               >
                 {({ isSubmitting }) => (
                   <Form className="col-12 col-md-6 mt-3 mt-md-0">
-                    <h1 className="text-center mb-4">Войти</h1>
+                    <h1 className="text-center mb-4">{t('auth.login.title')}</h1>
                     
                     {loginError && (
                       <div className="alert alert-danger" role="alert">
@@ -53,12 +53,12 @@ const LoginPage = () => {
                       <Field
                         name="username"
                         id="username"
-                        placeholder="Ваш ник"
+                        placeholder={t('auth.login.usernamePlaceholder')}
                         className="form-control"
                         autoComplete="username"
                         required
                       />
-                      <label htmlFor="username">Ваш ник</label>
+                      <label htmlFor="username">{t('auth.login.username')}</label>
                     </div>
 
                     <div className="form-floating mb-4">
@@ -66,12 +66,12 @@ const LoginPage = () => {
                         type="password"
                         name="password"
                         id="password"
-                        placeholder="Пароль"
+                        placeholder={t('auth.login.passwordPlaceholder')}
                         className="form-control"
                         autoComplete="current-password"
                         required
                       />
-                      <label htmlFor="password">Пароль</label>
+                      <label htmlFor="password">{t('auth.login.password')}</label>
                     </div>
 
                     <button 
@@ -79,7 +79,7 @@ const LoginPage = () => {
                       className="w-100 mb-3 btn btn-outline-primary"
                       disabled={isSubmitting}
                     >
-                      Войти
+                      {t('auth.login.submit')}
                     </button>
                   </Form>
                 )}
@@ -88,7 +88,7 @@ const LoginPage = () => {
             
             <div className="card-footer p-4">
               <div className="text-center">
-                <span>Нет аккаунта?</span> <Link to="/signup">Регистрация</Link>
+                <span>{t('auth.login.noAccount')}</span> <Link to="/signup">{t('auth.login.signupLink')}</Link>
               </div>
             </div>
           </div>

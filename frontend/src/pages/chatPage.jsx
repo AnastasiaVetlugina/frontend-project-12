@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
 import { io } from "socket.io-client"
+import { useTranslation } from 'react-i18next'
 import {
   setChannels,
   setCurrentChannel,
@@ -24,6 +25,7 @@ import store from "../store/index.js"
 
 const ChatPage = () => {
   const dispatch = useDispatch()
+  const { t } = useTranslation()
   const channels = useSelector(selectChannels)
   const channelNames = channels.map((ch) => ch.name)
   const currentChannelId = useSelector(selectCurrentChannelId)
@@ -69,7 +71,7 @@ const ChatPage = () => {
         )
         if (general) dispatch(setCurrentChannel(general.id))
       } catch (error) {
-        console.error("Ошибка загрузки:", error)
+        console.error(t('errors.loading'), error)
       }
     }
 
@@ -112,7 +114,7 @@ const ChatPage = () => {
       )
       setNewMessage("")
     } catch (err) {
-      console.error("Ошибка отправки:", err)
+      console.error(t('errors.sending'), err)
     } finally {
       setSending(false)
     }
@@ -128,7 +130,7 @@ const ChatPage = () => {
       dispatch(setCurrentChannel(response.data.id))
       setShowAddChannel(false)
     } catch (err) {
-      console.error("Ошибка создания канала:", err)
+      console.error(t('errors.channelCreate'), err)
       throw err
     }
   }
@@ -140,7 +142,7 @@ const ChatPage = () => {
       })
       setShowRemoveChannel(null)
     } catch (err) {
-      console.error("Ошибка удаления:", err)
+      console.error(t('errors.channelDelete'), err)
       throw err
     }
   }
@@ -153,7 +155,7 @@ const ChatPage = () => {
       )
       setShowRenameChannel(null)
     } catch (err) {
-      console.error("Ошибка переименования:", err)
+      console.error(t('errors.channelRename'), err)
       throw err
     }
   }
@@ -168,7 +170,7 @@ const ChatPage = () => {
       <div className="row h-100 bg-white flex-md-row">
         <div className="col-4 col-md-2 border-end px-0 bg-light flex-column h-100 d-flex">
           <div className="d-flex mt-1 justify-content-between mb-2 ps-4 pe-2 p-4">
-            <b>Каналы</b>
+            <b>{t('chat.channels')}</b>
             <button
               type="button"
               className="p-0 text-primary btn btn-group-vertical"
@@ -215,7 +217,7 @@ const ChatPage = () => {
               </p>
               <span className="text-muted">
                 {currentMessages.length}{" "}
-                {currentMessages.length === 1 ? "сообщение" : "сообщений"}
+                {currentMessages.length === 1 ? t('chat.messages_one') : t('chat.messages_many')}
               </span>
             </div>
 
@@ -236,8 +238,8 @@ const ChatPage = () => {
                 <div className="input-group has-validation">
                   <input
                     name="body"
-                    aria-label="Новое сообщение"
-                    placeholder="Введите сообщение..."
+                    aria-label={t('chat.newMessage')}
+                    placeholder={t('chat.messagePlaceholder')}
                     className="border-0 p-0 ps-2 form-control"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -248,7 +250,7 @@ const ChatPage = () => {
                     className="btn btn-group-vertical"
                     disabled={sending || !newMessage.trim()}
                   >
-                    Отправить
+                    {t('chat.send')}
                   </button>
                 </div>
               </form>

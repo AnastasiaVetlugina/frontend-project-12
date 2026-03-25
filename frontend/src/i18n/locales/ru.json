@@ -1,0 +1,86 @@
+{
+  "app": {
+    "title": "Hexlet Chat",
+    "logout": "Выйти"
+  },
+  "chat": {
+    "channels": "Каналы",
+    "messages_one": "сообщение",
+    "messages_few": "сообщения",
+    "messages_many": "сообщений",
+    "newMessage": "Новое сообщение",
+    "messagePlaceholder": "Введите сообщение...",
+    "send": "Отправить",
+    "addChannel": "Добавить канал",
+    "removeChannel": "Удалить канал",
+    "renameChannel": "Переименовать канал",
+    "delete": "Удалить",
+    "rename": "Переименовать",
+    "cancel": "Отменить",
+    "channelManagement": "Управление каналом"
+  },
+  "modals": {
+    "addChannel": {
+      "title": "Добавить канал",
+      "nameLabel": "Имя канала",
+      "namePlaceholder": "Имя канала",
+      "submit": "Отправить",
+      "cancel": "Отменить"
+    },
+    "removeChannel": {
+      "title": "Удалить канал",
+      "confirmMessage": "Уверены?",
+      "submit": "Удалить",
+      "cancel": "Отменить"
+    },
+    "renameChannel": {
+      "title": "Переименовать канал",
+      "nameLabel": "Имя канала",
+      "submit": "Отправить",
+      "cancel": "Отменить"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Войти",
+      "username": "Ваш ник",
+      "usernamePlaceholder": "Ваш ник",
+      "password": "Пароль",
+      "passwordPlaceholder": "Пароль",
+      "submit": "Войти",
+      "error": "Неверный ник или пароль. Пожалуйста, попробуйте снова.",
+      "noAccount": "Нет аккаунта?",
+      "signupLink": "Регистрация"
+    },
+    "signup": {
+      "title": "Регистрация",
+      "username": "Имя пользователя",
+      "usernamePlaceholder": "От 3 до 20 символов",
+      "password": "Пароль",
+      "passwordPlaceholder": "Не менее 6 символов",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Пароли должны совпадать",
+      "submit": "Зарегистрироваться",
+      "userExists": "Такой пользователь уже существует"
+    }
+  },
+  "validation": {
+    "required": "Обязательное поле",
+    "usernameMin": "От 3 до 20 символов",
+    "usernameMax": "От 3 до 20 символов",
+    "passwordMin": "Не менее 6 символов",
+    "passwordMatch": "Пароли должны совпадать",
+    "unique": "Должно быть уникальным"
+  },
+  "errors": {
+    "loading": "Ошибка загрузки",
+    "sending": "Ошибка отправки",
+    "channelCreate": "Ошибка создания канала",
+    "channelDelete": "Ошибка удаления",
+    "channelRename": "Ошибка переименования"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Страница не найдена"
+  }
+}

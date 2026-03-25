@@ -1,10 +1,12 @@
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from 'yup'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
   const inputRef = useRef(null)
   const [renaming, setRenaming] = useState(false)
+  const { t } = useTranslation()
   const otherNames = channelNames.filter(name => name !== channel.name)
 
   useEffect(() => {
@@ -13,10 +15,10 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .min(3, 'От 3 до 20 символов')
-      .max(20, 'От 3 до 20 символов')
-      .required('Обязательное поле')
-      .notOneOf(otherNames, 'Должно быть уникальным'),
+      .min(3, t('validation.usernameMin'))
+      .max(20, t('validation.usernameMax'))
+      .required(t('validation.required'))
+      .notOneOf(otherNames, t('validation.unique')),
   })
 
   return (
@@ -32,7 +34,7 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
                 await onRename(channel.id, values.name)
                 onClose()
               } catch (error) {
-                console.error('Ошибка:', error)
+                console.error(t('errors.channelRename'), error)
                 setRenaming(false)
               }
             }}
@@ -41,7 +43,7 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
               <Form>
                 <div className="modal-content">
                   <div className="modal-header">
-                    <div className="modal-title h4">Переименовать канал</div>
+                    <div className="modal-title h4">{t('modals.renameChannel.title')}</div>
                     <button 
                       type="button" 
                       aria-label="Close" 
@@ -61,7 +63,7 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
                         disabled={renaming}
                       />
                       <label className="visually-hidden" htmlFor="name">
-                        Имя канала
+                        {t('modals.renameChannel.nameLabel')}
                       </label>
                       <ErrorMessage 
                         name="name" 
@@ -77,14 +79,14 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
                         onClick={onClose}
                         disabled={renaming}
                       >
-                        Отменить
+                        {t('modals.renameChannel.cancel')}
                       </button>
                       <button 
                         type="submit" 
                         className="btn btn-primary"
                         disabled={renaming}
                       >
-                        Отправить
+                        {t('modals.renameChannel.submit')}
                       </button>
                     </div>
                   </div>
