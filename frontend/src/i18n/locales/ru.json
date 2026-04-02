@@ -66,6 +66,8 @@
   },
   "validation": {
     "required": "Обязательное поле",
+    "usernameMin": "От 3 до 20 символов",
+    "usernameMax": "От 3 до 20 символов",
     "channelNameMin": "От 3 до 20 символов",
     "channelNameMax": "От 3 до 20 символов",
     "passwordMin": "Не менее 6 символов",
