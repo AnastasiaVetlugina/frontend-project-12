@@ -5,84 +5,65 @@ import ChatPage from "./pages/chatPage.jsx"
 import NotFoundPage from "./pages/notFound.jsx"
 import { useTranslation } from 'react-i18next'
 import { ToastContainer } from 'react-toastify'
-import { Provider as RollbarProvider, ErrorBoundary } from '@rollbar/react'
+import { isAuthenticated } from "./api/authApi"
 
-const rollbarConfig = {
-  accessToken: import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN,
-  environment: import.meta.env.MODE || 'development',
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-};
-
-console.log('Rollbar токен:', rollbarConfig.accessToken);
-console.log('Длина токена:', rollbarConfig.accessToken?.length);
-
+// Компонент для защиты приватных маршрутов
 const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token")
-
-  if (!token) {
+  // Используем API для проверки авторизации
+  if (!isAuthenticated()) {
     return <Navigate to="/login" />
   }
-
   return children;
 };
 
 function App() {
   const { t } = useTranslation()
-  const token = localStorage.getItem("token")
-  const isAuthenticated = !!token
+  const authenticated = isAuthenticated()
 
   const handleLogout = () => {
+    // Очищаем localStorage через API (напрямую пока оставим, 
+    // но позже вынесем в authApi)
     localStorage.removeItem("token")
     localStorage.removeItem("username")
     window.location = '/login'
   }
 
-return (
-  <RollbarProvider config={rollbarConfig}>
-    <ErrorBoundary fallbackUI={() => (
-      <div style={{ padding: '20px', color: 'red', textAlign: 'center' }}>
-        <h2>Что-то пошло не так</h2>
-        <p>Мы уже уведомлены и исправляем проблему</p>
-        <button onClick={() => window.location.reload()}>Перезагрузить</button>
-      </div>
-    )}>
-      <BrowserRouter>
-        <div className="d-flex flex-column h-100">
-          <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
-            <div className="container">
-              <a className="navbar-brand" href="/">{t('app.title')}</a>
-              {isAuthenticated && (
-                <button 
-                  type="button" 
-                  className="btn btn-primary"
-                  onClick={handleLogout}
-                >
-                  {t('app.logout')}
-                </button>
-              )}
-            </div>
-          </nav>
+  return (
+    <BrowserRouter>
+      <div className="d-flex flex-column h-100">
+        <nav className="shadow-sm navbar navbar-expand-lg navbar-light bg-white">
+          <div className="container">
+            <a className="navbar-brand" href="/">{t('app.title')}</a>
+            {authenticated && (
+              <button 
+                type="button" 
+                className="btn btn-primary"
+                onClick={handleLogout}
+              >
+                {t('app.logout')}
+              </button>
+            )}
+          </div>
+        </nav>
 
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <PrivateRoute>
-                  <ChatPage />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-           <ToastContainer position="top-right" autoClose={5000} />
-        </div>
-      </BrowserRouter>
-        </ErrorBoundary>
-    </RollbarProvider>
-    )
-  }
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <ChatPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+        
+        <ToastContainer position="top-right" autoClose={5000} />
+      </div>
+    </BrowserRouter>
+  )
+}
 
 export default App

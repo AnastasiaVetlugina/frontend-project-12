@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from 'axios'
 import { useTranslation } from 'react-i18next'
+import { setToken, setUsername } from "../api/authApi"
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -30,11 +31,15 @@ const LoginPage = () => {
                       password: values.password,
                     })
 
-                    localStorage.setItem("token", response.data.token)
-                    localStorage.setItem("username", response.data.username)
+                    setToken(response.data.token)
+                    setUsername(response.data.username)
                     navigate("/")
                   } catch (error) {
-                    setLoginError(t('auth.login.error'))
+                    if (error.response?.status === 401) {
+                      setLoginError(t('auth.login.error'))
+                    } else {
+                      setLoginError(t('errors.network'))
+                    }
                   } finally {
                     setSubmitting(false)
                   }

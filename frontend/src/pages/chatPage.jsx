@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
-import { io } from "socket.io-client"
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import profanity from '../utils/profanity'
-import { useRollbar } from '@rollbar/react'
 import {
   setChannels,
   setCurrentChannel,
@@ -25,6 +23,8 @@ import RemoveChannelModal from "../components/removeChannelModal.jsx"
 import RenameChannelModal from "../components/renameChannelModal.jsx"
 import ChannelMenu from "../components/channelMenu.jsx"
 import store from "../store/index.js"
+import { getToken, getUsername, removeToken, removeUsername } from "../api/authApi.js"
+import { useSocket } from "../hooks/useSocket.js"
 
 const ChatPage = () => {
   const dispatch = useDispatch()
@@ -36,29 +36,50 @@ const ChatPage = () => {
 
   const [newMessage, setNewMessage] = useState("")
   const [sending, setSending] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [showAddChannel, setShowAddChannel] = useState(false)
   const [showRemoveChannel, setShowRemoveChannel] = useState(null)
   const [showRenameChannel, setShowRenameChannel] = useState(null)
 
-  const token = localStorage.getItem("token")
-  const rollbar = useRollbar()
+  const messagesEndRef = useRef(null)
+  const inputRef = useRef(null)
+
+  const token = getToken()
 
   useEffect(() => {
-    if (showAddChannel || showRemoveChannel || showRenameChannel) {
-      document.body.classList.add("modal-open")
-    } else {
-      document.body.classList.remove("modal-open")
-    }
-    
-    return () => {
-      document.body.classList.remove("modal-open")
-    }
-  }, [showAddChannel, showRemoveChannel, showRenameChannel])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, currentChannelId])
 
   useEffect(() => {
-    const socket = io({ auth: { token } })
+    inputRef.current?.focus()
+  }, [currentChannelId])
 
+  const handleNewMessage = (message) => {
+    dispatch(addMessage(message))
+  }
+
+  const handleNewChannel = (channel) => {
+    dispatch(addChannel(channel))
+  }
+
+  const handleRemoveChannelSocket = ({ id }) => {
+    dispatch(removeChannel(id))
+    const state = store.getState()
+    if (state.channels.currentChannelId === id) {
+      const general = state.channels.channels.find(ch => ch.name === 'general')
+      if (general) dispatch(setCurrentChannel(general.id))
+    }
+  }
+
+  const handleRenameChannelSocket = ({ id, name }) => {
+    dispatch(renameChannel({ id, name }))
+  }
+
+  useSocket(handleNewMessage, handleNewChannel, handleRemoveChannelSocket, handleRenameChannelSocket)
+
+  useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true)
       try {
         const channelsRes = await axios.get("/api/v1/channels", {
           headers: { Authorization: `Bearer ${token}` },
@@ -75,38 +96,23 @@ const ChatPage = () => {
         )
         if (general) dispatch(setCurrentChannel(general.id))
       } catch (error) {
-        if (!navigator.onLine) {
+        if (error.response?.status === 401) {
+          removeToken()
+          removeUsername()
+          window.location = '/login'
+        } else if (!navigator.onLine) {
           toast.error(t('errors.network'))
         } else {
           toast.error(t('errors.loading'))
         }
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    fetchData()
-
-    socket.on("newMessage", (message) => {
-      dispatch(addMessage(message))
-    })
-
-    socket.on("newChannel", (channel) => {
-      dispatch(addChannel(channel))
-    })
-
-    socket.on("removeChannel", ({ id }) => {
-      dispatch(removeChannel(id))
-      const state = store.getState()
-      if (state.channels.currentChannelId === id) {
-        const general = state.channels.channels.find(ch => ch.name === 'general')
-        if (general) dispatch(setCurrentChannel(general.id))
-      }
-    })
-
-    socket.on("renameChannel", ({ id, name }) => {
-      dispatch(renameChannel({ id, name }))
-    })
-
-    return () => socket.disconnect()
+    if (token) {
+      fetchData()
+    }
   }, [dispatch, token, t])
 
   const handleSendMessage = async (e) => {
@@ -116,7 +122,7 @@ const ChatPage = () => {
     setSending(true)
     try {
       const cleanMessage = profanity.clean(newMessage)
-      const username = localStorage.getItem("username")
+      const username = getUsername()
 
       await axios.post(
         "/api/v1/messages",
@@ -125,7 +131,13 @@ const ChatPage = () => {
       )
       setNewMessage("")
     } catch (err) {
-      toast.error(t('errors.sending'))
+      if (err.response?.status === 401) {
+        removeToken()
+        removeUsername()
+        window.location = '/login'
+      } else {
+        toast.error(t('errors.sending'))
+      }
     } finally {
       setSending(false)
     }
@@ -144,7 +156,13 @@ const ChatPage = () => {
       toast.success(t('toasts.channelCreated'))
       setShowAddChannel(false)
     } catch (err) {
-      toast.error(t('errors.channelCreate'))
+      if (err.response?.status === 401) {
+        removeToken()
+        removeUsername()
+        window.location = '/login'
+      } else {
+        toast.error(t('errors.channelCreate'))
+      }
       throw err
     }
   }
@@ -157,7 +175,13 @@ const ChatPage = () => {
       toast.success(t('toasts.channelDeleted'))
       setShowRemoveChannel(null)
     } catch (err) {
-      toast.error(t('errors.channelDelete'))
+      if (err.response?.status === 401) {
+        removeToken()
+        removeUsername()
+        window.location = '/login'
+      } else {
+        toast.error(t('errors.channelDelete'))
+      }
       throw err
     }
   }
@@ -173,7 +197,13 @@ const ChatPage = () => {
       toast.success(t('toasts.channelRenamed'))
       setShowRenameChannel(null)
     } catch (err) {
-      toast.error(t('errors.channelRename'))
+      if (err.response?.status === 401) {
+        removeToken()
+        removeUsername()
+        window.location = '/login'
+      } else {
+        toast.error(t('errors.channelRename'))
+      }
       throw err
     }
   }
@@ -182,6 +212,16 @@ const ChatPage = () => {
     (m) => m.channelId === currentChannelId,
   )
   const currentChannel = channels.find((c) => c.id === currentChannelId)
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Загрузка...</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container h-100 my-4 overflow-hidden rounded shadow">
@@ -198,10 +238,7 @@ const ChatPage = () => {
             </button>
           </div>
           
-          <ul
-            id="channels-box"
-            className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block"
-          >
+          <ul className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
             {channels.map((channel) => (
               <li key={channel.id} className="nav-item w-100">
                 {channel.name === "general" || channel.name === "random" ? (
@@ -239,22 +276,20 @@ const ChatPage = () => {
               </span>
             </div>
 
-            <div id="messages-box" className="chat-messages overflow-auto px-5">
+            <div className="chat-messages overflow-auto px-5">
               {currentMessages.map((msg) => (
                 <div key={msg.id} className="text-break mb-2">
                   <b>{msg.username}:</b> {msg.text}
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
 
             <div className="mt-auto px-5 py-3">
-              <form
-                onSubmit={handleSendMessage}
-                noValidate
-                className="py-1 border rounded-2"
-              >
+              <form onSubmit={handleSendMessage} noValidate className="py-1 border rounded-2">
                 <div className="input-group has-validation">
                   <input
+                    ref={inputRef}
                     name="body"
                     aria-label={t('chat.newMessage')}
                     placeholder={t('chat.messagePlaceholder')}
@@ -278,11 +313,7 @@ const ChatPage = () => {
       </div>
 
       {showAddChannel && (
-        <div 
-          className="modal show" 
-          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-          tabIndex="-1"
-        >
+        <div className="modal show" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
             <AddChannelModal 
               channelNames={channelNames}
@@ -294,11 +325,7 @@ const ChatPage = () => {
       )}
 
       {showRemoveChannel && (
-        <div 
-          className="modal show" 
-          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-          tabIndex="-1"
-        >
+        <div className="modal show" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
             <RemoveChannelModal 
               channel={showRemoveChannel}
@@ -310,11 +337,7 @@ const ChatPage = () => {
       )}
 
       {showRenameChannel && (
-        <div 
-          className="modal show" 
-          style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} 
-          tabIndex="-1"
-        >
+        <div className="modal show" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }} tabIndex="-1">
           <div className="modal-dialog modal-dialog-centered">
             <RenameChannelModal 
               channel={showRenameChannel}

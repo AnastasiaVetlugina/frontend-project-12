@@ -1,9 +1,10 @@
-import { Formik, Form, Field, ErrorMessage } from "formik"
+import { Formik, Form, Field } from "formik"
 import * as Yup from "yup"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axios from "axios"
 import { useTranslation } from 'react-i18next'
+import { setToken, setUsername } from "../api/authApi"
 
 const SignupPage = () => {
   const navigate = useNavigate()
@@ -50,8 +51,8 @@ const SignupPage = () => {
                       password: values.password,
                     })
 
-                    localStorage.setItem("token", response.data.token)
-                    localStorage.setItem("username", response.data.username)
+                    setToken(response.data.token)
+                    setUsername(response.data.username)
                     navigate("/")
                   } catch (error) {
                     if (error.response?.status === 409) {
