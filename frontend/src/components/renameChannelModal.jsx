@@ -15,8 +15,8 @@ const RenameChannelModal = ({ channel, onClose, onRename, channelNames }) => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .min(3, t('validation.usernameMin'))
-      .max(20, t('validation.usernameMax'))
+      .min(3, t('validation.channelNameMin'))
+      .max(20, t('validation.channelNameMax'))
       .required(t('validation.required'))
       .notOneOf(otherNames, t('validation.unique')),
   })

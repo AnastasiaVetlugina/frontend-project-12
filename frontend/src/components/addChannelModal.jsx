@@ -13,8 +13,8 @@ const AddChannelModal = ({ channelNames = [], onAddChannel, onClose }) => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .min(3, t('validation.usernameMin'))
-      .max(20, t('validation.usernameMax'))
+      .min(3, t('validation.channelNameMin'))
+      .max(20, t('validation.channelNameMax'))
       .required(t('validation.required'))
       .notOneOf(channelNames, t('validation.unique')),
   })

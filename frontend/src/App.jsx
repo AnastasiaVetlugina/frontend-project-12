@@ -4,6 +4,8 @@ import SignupPage from "./pages/signupPage.jsx"
 import ChatPage from "./pages/chatPage.jsx"
 import NotFoundPage from "./pages/notFound.jsx"
 import { useTranslation } from 'react-i18next'
+import { ToastContainer } from 'react-toastify'
+
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem("token")
@@ -56,6 +58,7 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+         <ToastContainer position="top-right" autoClose={5000} />
       </div>
     </BrowserRouter>
   )

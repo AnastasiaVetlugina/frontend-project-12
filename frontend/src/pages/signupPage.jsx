@@ -51,6 +51,7 @@ const SignupPage = () => {
                     })
 
                     localStorage.setItem("token", response.data.token)
+                    localStorage.setItem("username", response.data.username)
                     navigate("/")
                   } catch (error) {
                     if (error.response?.status === 409) {

@@ -31,6 +31,7 @@ const LoginPage = () => {
                     })
 
                     localStorage.setItem("token", response.data.token)
+                    localStorage.setItem("username", response.data.username)
                     navigate("/")
                   } catch (error) {
                     setLoginError(t('auth.login.error'))

@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
 import { io } from "socket.io-client"
 import { useTranslation } from 'react-i18next'
+import { toast } from 'react-toastify'
+import profanity from '../utils/profanity'
 import {
   setChannels,
   setCurrentChannel,
@@ -71,7 +73,11 @@ const ChatPage = () => {
         )
         if (general) dispatch(setCurrentChannel(general.id))
       } catch (error) {
-        console.error(t('errors.loading'), error)
+        if (!navigator.onLine) {
+          toast.error(t('errors.network'))
+        } else {
+          toast.error(t('errors.loading'))
+        }
       }
     }
 
@@ -99,7 +105,7 @@ const ChatPage = () => {
     })
 
     return () => socket.disconnect()
-  }, [dispatch, token])
+  }, [dispatch, token, t])
 
   const handleSendMessage = async (e) => {
     e.preventDefault()
@@ -107,14 +113,17 @@ const ChatPage = () => {
 
     setSending(true)
     try {
+      const cleanMessage = profanity.clean(newMessage)
+      const username = localStorage.getItem("username")
+
       await axios.post(
         "/api/v1/messages",
-        { text: newMessage, channelId: currentChannelId },
+        { text: cleanMessage, channelId: currentChannelId, username: username },
         { headers: { Authorization: `Bearer ${token}` } },
       )
       setNewMessage("")
     } catch (err) {
-      console.error(t('errors.sending'), err)
+      toast.error(t('errors.sending'))
     } finally {
       setSending(false)
     }
@@ -122,15 +131,18 @@ const ChatPage = () => {
 
   const handleAddChannel = async (channelName) => {
     try {
+      const cleanName = profanity.clean(channelName)
+
       const response = await axios.post(
         "/api/v1/channels",
-        { name: channelName },
+        { name: cleanName },
         { headers: { Authorization: `Bearer ${token}` } },
       )
       dispatch(setCurrentChannel(response.data.id))
+      toast.success(t('toasts.channelCreated'))
       setShowAddChannel(false)
     } catch (err) {
-      console.error(t('errors.channelCreate'), err)
+      toast.error(t('errors.channelCreate'))
       throw err
     }
   }
@@ -140,22 +152,26 @@ const ChatPage = () => {
       await axios.delete(`/api/v1/channels/${channelId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
+      toast.success(t('toasts.channelDeleted'))
       setShowRemoveChannel(null)
     } catch (err) {
-      console.error(t('errors.channelDelete'), err)
+      toast.error(t('errors.channelDelete'))
       throw err
     }
   }
 
   const handleRenameChannel = async (channelId, newName) => {
     try {
+      const cleanName = profanity.clean(newName)
+
       await axios.patch(`/api/v1/channels/${channelId}`,
-        { name: newName },
+        { name: cleanName },
         { headers: { Authorization: `Bearer ${token}` } }
       )
+      toast.success(t('toasts.channelRenamed'))
       setShowRenameChannel(null)
     } catch (err) {
-      console.error(t('errors.channelRename'), err)
+      toast.error(t('errors.channelRename'))
       throw err
     }
   }

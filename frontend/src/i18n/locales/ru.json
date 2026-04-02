@@ -66,14 +66,15 @@
   },
   "validation": {
     "required": "Обязательное поле",
-    "usernameMin": "От 3 до 20 символов",
-    "usernameMax": "От 3 до 20 символов",
+    "channelNameMin": "От 3 до 20 символов",
+    "channelNameMax": "От 3 до 20 символов",
     "passwordMin": "Не менее 6 символов",
     "passwordMatch": "Пароли должны совпадать",
     "unique": "Должно быть уникальным"
   },
   "errors": {
     "loading": "Ошибка загрузки",
+    "network": "Нет соединения с сетью",
     "sending": "Ошибка отправки",
     "channelCreate": "Ошибка создания канала",
     "channelDelete": "Ошибка удаления",
@@ -82,5 +83,10 @@
   "notFound": {
     "title": "404",
     "message": "Страница не найдена"
+  },
+  "toasts": {
+    "channelCreated": "Канал успешно создан",
+    "channelRenamed": "Канал успешно переименован",
+    "channelDeleted": "Канал успешно удалён"
   }
 }
