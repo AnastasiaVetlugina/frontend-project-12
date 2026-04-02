@@ -5,6 +5,7 @@ import { io } from "socket.io-client"
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import profanity from '../utils/profanity'
+import { useRollbar } from '@rollbar/react'
 import {
   setChannels,
   setCurrentChannel,
@@ -40,6 +41,7 @@ const ChatPage = () => {
   const [showRenameChannel, setShowRenameChannel] = useState(null)
 
   const token = localStorage.getItem("token")
+  const rollbar = useRollbar()
 
   useEffect(() => {
     if (showAddChannel || showRemoveChannel || showRenameChannel) {
