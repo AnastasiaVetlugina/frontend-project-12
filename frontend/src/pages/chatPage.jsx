@@ -239,28 +239,32 @@ const ChatPage = () => {
           </div>
           
           <ul className="nav flex-column nav-pills nav-fill px-2 mb-3 overflow-auto h-100 d-block">
-            {channels.map((channel) => (
-              <li key={channel.id} className="nav-item w-100">
-                {channel.name === "general" || channel.name === "random" ? (
-                  <button
-                    type="button"
-                    className={`w-100 rounded-0 text-start btn ${channel.id === currentChannelId ? "btn-secondary" : ""}`}
-                    onClick={() => dispatch(setCurrentChannel(channel.id))}
-                  >
-                    <span className="me-1">#</span>
-                    {channel.name}
-                  </button>
-                ) : ( 
-                  <ChannelMenu 
-                    channel={channel}
-                    currentChannelId={currentChannelId}
-                    onSwitchChannel={(id) => dispatch(setCurrentChannel(id))}
-                    onShowRemove={() => setShowRemoveChannel(channel)}
-                    onShowRename={() => setShowRenameChannel(channel)}
-                  />
-                )}
-              </li>
-            ))}
+            {channels.map((channel) => {
+              const displayName = profanity.clean(channel.name);
+              return (
+                <li key={channel.id} className="nav-item w-100">
+                  {channel.name === "general" || channel.name === "random" ? (
+                    <button
+                      type="button"
+                      className={`w-100 rounded-0 text-start btn ${channel.id === currentChannelId ? "btn-secondary" : ""}`}
+                      onClick={() => dispatch(setCurrentChannel(channel.id))}
+                      aria-label={displayName}
+                    >
+                      <span className="me-1">#</span>
+                      {displayName}
+                    </button>
+                  ) : ( 
+                    <ChannelMenu 
+                      channel={channel}
+                      currentChannelId={currentChannelId}
+                      onSwitchChannel={(id) => dispatch(setCurrentChannel(id))}
+                      onShowRemove={() => setShowRemoveChannel(channel)}
+                      onShowRename={() => setShowRenameChannel(channel)}
+                    />
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -268,7 +272,7 @@ const ChatPage = () => {
           <div className="d-flex flex-column h-100">
             <div className="bg-light mb-4 p-3 shadow-sm small">
               <p className="m-0">
-                <b># {currentChannel?.name}</b>
+                <b># {profanity.clean(currentChannel?.name || '')}</b>
               </p>
               <span className="text-muted">
                 {currentMessages.length}{" "}

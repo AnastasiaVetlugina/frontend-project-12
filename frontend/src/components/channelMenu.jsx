@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import profanity from '../utils/profanity'
 
 const ChannelMenu = ({ channel, currentChannelId, onSwitchChannel, onShowRemove, onShowRename }) => {
   const { t } = useTranslation()
+  const displayName = profanity.clean(channel.name)
 
   return (
     <div className="d-flex dropdown btn-group w-100">
@@ -9,8 +11,9 @@ const ChannelMenu = ({ channel, currentChannelId, onSwitchChannel, onShowRemove,
         type="button"
         className={`w-100 rounded-0 text-start text-truncate btn ${channel.id === currentChannelId ? 'btn-secondary' : ''}`}
         onClick={() => onSwitchChannel(channel.id)}
+        aria-label={displayName}
       >
-        <span className="me-1">#</span>{channel.name}
+        <span className="me-1">#</span>{displayName}
       </button>
       
       <button 

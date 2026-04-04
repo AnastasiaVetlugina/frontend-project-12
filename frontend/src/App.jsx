@@ -7,9 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ToastContainer } from 'react-toastify'
 import { isAuthenticated } from "./api/authApi"
 
-// Компонент для защиты приватных маршрутов
 const PrivateRoute = ({ children }) => {
-  // Используем API для проверки авторизации
   if (!isAuthenticated()) {
     return <Navigate to="/login" />
   }
@@ -21,8 +19,6 @@ function App() {
   const authenticated = isAuthenticated()
 
   const handleLogout = () => {
-    // Очищаем localStorage через API (напрямую пока оставим, 
-    // но позже вынесем в authApi)
     localStorage.removeItem("token")
     localStorage.removeItem("username")
     window.location = '/login'
